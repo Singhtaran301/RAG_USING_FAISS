@@ -13,6 +13,7 @@ from langchain.chat_models import init_chat_model
 from dotenv import load_dotenv
 import time
 from langchain_groq import ChatGroq
+from langchain_community.document_loaders import PyPDFLoader
 # Load environment variables locally
 load_dotenv()
 
