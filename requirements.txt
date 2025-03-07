@@ -10,6 +10,7 @@ ipykernel
 bs4
 arxiv
 pymupdf
+pypdf
 chromadb
 sentence-transformers
 faiss-cpu
