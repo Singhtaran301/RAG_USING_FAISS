@@ -41,35 +41,45 @@ prompt = ChatPromptTemplate.from_template(
 # Function to create vector embeddings
 def create_vector_embedding():
     if "vectors" not in st.session_state:
-        st.session_state.embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-
-        # Upload PDF instead of reading from a folder
-        uploaded_file = st.file_uploader("Upload a research paper (PDF)", type=["pdf"])
-        if not uploaded_file:
-            st.error("Please upload a PDF file.")
+        # Retrieve the uploaded file
+        if "uploaded_file" not in st.session_state:
+            st.error("Please upload a PDF file first.")
             return
+        
+        uploaded_file = st.session_state.uploaded_file
 
-        # Process uploaded PDF
-        with open("temp.pdf", "wb") as f:
+        # Save file temporarily
+        file_path = f"temp_{uploaded_file.name}"
+        with open(file_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
 
-        st.session_state.loader = PyPDFDirectoryLoader("temp.pdf")
-        st.session_state.docs = st.session_state.loader.load()
+        # Load PDF properly
+        loader = PyPDFLoader(file_path)
+        docs = loader.load()
 
-        st.session_state.text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        st.session_state.final_docs = st.session_state.text_splitter.split_documents(st.session_state.docs)
+        # Split documents
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        final_docs = text_splitter.split_documents(docs)
 
         # Create FAISS vector database
-        st.session_state.vectors = FAISS.from_documents(st.session_state.final_docs, st.session_state.embeddings)
+        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        st.session_state.vectors = FAISS.from_documents(final_docs, embeddings)
+
         st.success("✅ Vector DB is ready!")
 
 # Streamlit UI
 st.title("RAG Chatbot with FAISS")
 
-user_prompt = st.text_input("Enter your query from the research paper")
+# File uploader with persistence
+uploaded_file = st.file_uploader("Upload a research paper (PDF)", type=["pdf"])
+if uploaded_file:
+    st.session_state.uploaded_file = uploaded_file  # Store file persistently
 
 if st.button("Document Embedding"):
     create_vector_embedding()
+
+# Handle user queries
+user_prompt = st.text_input("Enter your query from the research paper")
 
 if user_prompt:
     if "vectors" not in st.session_state:
