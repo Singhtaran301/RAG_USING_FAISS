@@ -1,13 +1,14 @@
 import streamlit as st
-import os
-from dotenv import load_dotenv
-from langchain_groq import ChatGroq
+import langchain
 from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import PyPDFDirectoryLoader
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain.chains import create_retrieval_chain, create_stuff_documents_chain
+from langchain_groq import ChatGroq
+import os
+from langchain.chat_models import init_chat_model
+from dotenv import load_dotenv
 import time
 
 # Load environment variables locally
