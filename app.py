@@ -17,7 +17,7 @@ import time
 load_dotenv()
 
 # Get API key
-groq_api_key = os.getenv("GROQ_API_KEY")
+groq_api_key = st.secrets["GROQ_API_KEY"]
 
 # Ensure API key is available
 if not groq_api_key:
