@@ -44,7 +44,7 @@ def create_vector_embedding():
         st.session_state.embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
         # Ensure the directory exists
-        pdf_dir = r"D:\LANGCHAIN\RAG_DOC_GROQ_2\research_papers"
+        pdf_dir = r"./research_papers"
         if not os.path.exists(pdf_dir):
             st.error(f"Directory '{pdf_dir}' not found. Please check the path.")
             return
